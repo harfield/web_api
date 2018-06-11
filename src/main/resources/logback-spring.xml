@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="false" scanPeriod="120 seconds">
+
+    <property name="log.base" value="/tmp/logs"/>
+    <property name="trace" value="trace"/>
+    <property name="debug" value="debug"/>
+    <property name="info" value="info"/>
+    <property name="warn" value="warn"/>
+    <property name="error" value="error"/>
+    <property name="pname" value="dowsing"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%date [%thread] [%level] %logger Line:%L - %msg %n</pattern>
+        </encoder>
+    </appender>
+    <appender name="TRACE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.base}/${pname}/${trace}/trace.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%date [%thread] [%level] %logger - %msg %n</pattern>
+        </encoder>
+    </appender>
+    <!--<appender name="DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.base}/${pname}/${debug}/debug.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder>
+            <pattern>%date [%thread] [%level] %logger - %msg %n</pattern>
+        </encoder>
+    </appender>
+    <appender name="INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.base}/${pname}/${info}/info.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder>
+            <pattern>%date [%thread] [%level] %logger - %msg %n</pattern>
+        </encoder>
+    </appender>
+    <appender name="WARN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.base}/${pname}/${warn}/warn.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder>
+            <pattern>%date [%thread] [%level] %logger - %msg %n</pattern>
+        </encoder>
+    </appender>
+    <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.base}/${pname}/${error}/error.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder>
+            <pattern>%date [%thread] [%level] %logger - %msg %n</pattern>
+        </encoder>
+    </appender>
+    <appender name="ASYNC_DEBUG" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="DEBUG"/>
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>512</queueSize>
+    </appender>
+    <appender name="ASYNC_INFO" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="INFO"/>
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>512</queueSize>
+    </appender>
+    <appender name="ASYNC_WARN" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="WARN"/>
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>512</queueSize>
+    </appender>
+    <appender name="ASYNC_ERROR" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="ERROR"/>
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>512</queueSize>
+    </appender>
+    <appender name="ASYNC_TRACE" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="TRACE"/>
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>1024</queueSize>
+    </appender>-->
+
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+</configuration>
