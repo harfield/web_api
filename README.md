@@ -6,6 +6,7 @@
   + mybatis-spring-boot 
   + spring-boot-starter-security
   
-###  response json
+###  response with json
  
     {code:0,data:[{},{}]}
+    {code:10,message:''}
