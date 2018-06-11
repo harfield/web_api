@@ -4,5 +4,5 @@
 
   + spring-boot-setarter-web 
   + mybatis-spring-boot 
-  + spring-boot-setarter-security
+  + spring-boot-starter-security
   
