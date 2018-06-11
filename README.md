@@ -1,8 +1,7 @@
-# web_api
+# web_api framework with spring-boot 
 
-## spring-boot 2.0.1 
+###  dependences
 
-### 
   + spring-boot-setarter-web 
   + mybatis-spring-boot 
   + spring-boot-setarter-security
