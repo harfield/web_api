@@ -65,7 +65,7 @@ public class JobService {
         }
         bfw.close();
         List<Pair<String,File>> attachments = new ArrayList<Pair<String,File>>();
-        attachments.add(new Pair<String,File>(subject+".csv",tmpFile));
+        attachments.add(new Pair<String,File>(subject.substring(0,4)+".csv",tmpFile));
         emailService.sendAttachmentsMail(emailAddr,subject,subject,attachments);
         tmpFile.delete();
 
