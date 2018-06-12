@@ -1,6 +1,8 @@
 package com.fancydsp.data.service.impl;
 
+import ch.qos.logback.core.util.StringCollectionUtil;
 import com.fancydsp.data.dao.job.JobMapper;
+import com.fancydsp.data.domain.Pair;
 import com.fancydsp.data.service.DBService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.scheduling.annotation.Async;
@@ -8,6 +10,11 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -26,12 +33,42 @@ public class JobService {
 
 
     @Async
-    public void downloadDdyReport(String sql,String emailAddr,String subject) {
-
+    public void downloadDdyReport(String sql,String emailAddr,String subject,Map<String,String> heads) throws IOException {
+        long id = Thread.currentThread().getId();
         Object o = dbService.queryBySql(sql);
-        //to csv
+        File tmpFile = File.createTempFile( subject+id,".csv");
+        BufferedWriter bfw = new BufferedWriter(new FileWriter(tmpFile));
+        int size = heads.size();
+        int i=0;
 
-        emailService.sendSimpleMail(emailAddr,subject,o.toString());
+        for (String v : heads.values()){
+            bfw.append('"').append(v).append('"');
+            i++;
+            if(i==size){
+                bfw.append("\n");
+            }else {
+                bfw.append(",");
+            }
+        }
+        for(Object line : (List) o){
+            Map<String, Object> row = (Map<String, Object>) line;
+            i=0;
+            for (String key : heads.keySet()){
+                bfw.append('"').append(row.get(key)+"").append('"');
+                i++;
+                if(i==size){
+                    bfw.append("\n");
+                }else {
+                    bfw.append(",");
+                }
+
+            }
+        }
+        bfw.close();
+        List<Pair<String,File>> attachments = new ArrayList<Pair<String,File>>();
+        attachments.add(new Pair<String,File>(subject+".csv",tmpFile));
+        emailService.sendAttachmentsMail(emailAddr,subject,subject,attachments);
+        tmpFile.delete();
 
     }
 
