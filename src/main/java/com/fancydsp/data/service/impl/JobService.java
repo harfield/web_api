@@ -1,6 +1,5 @@
 package com.fancydsp.data.service.impl;
 
-import ch.qos.logback.core.util.StringCollectionUtil;
 import com.fancydsp.data.dao.job.JobMapper;
 import com.fancydsp.data.domain.Pair;
 import com.fancydsp.data.service.DBService;
