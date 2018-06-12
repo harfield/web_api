@@ -109,6 +109,8 @@ public class ApplicationServer
                 //http.csrf().disable();
                 http.authorizeRequests()
                         .antMatchers("/data/**").permitAll()
+                        .antMatchers("/jobs/**").permitAll()
+                        .antMatchers("/presto/**").permitAll()
                         .anyRequest().authenticated().mvcMatchers("/user/*").permitAll() //allow all user to acces// s
                         .and()
                         .formLogin()

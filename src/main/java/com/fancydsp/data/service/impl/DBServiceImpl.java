@@ -1,9 +1,7 @@
 package com.fancydsp.data.service.impl;
 
 
-import com.fancydsp.data.dao.CommonMapper;
-import com.fancydsp.data.dao.UserMapper;
-import com.fancydsp.data.domain.User;
+import com.fancydsp.data.dao.report.CommonMapper;
 import com.fancydsp.data.service.DBService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
@@ -21,12 +19,12 @@ import java.util.Map;
 import java.util.TreeMap;
 
 @Service(value="dbService")
-@MapperScan("com.fancydsp.data.dao")
+@MapperScan(value = "com.fancydsp.data.dao.report")
 public class DBServiceImpl implements DBService{
     private static Logger log = LoggerFactory.getLogger(DBServiceImpl.class);
     @Resource
-    CommonMapper comonDao;
-    @Resource
+    CommonMapper commonDao;
+    @Resource(name = "primaryDataSource")
     private DataSource dataSource;
 
     @Override
@@ -75,6 +73,6 @@ public class DBServiceImpl implements DBService{
 
     @Override
     public Object queryBySql(String sql) {
-        return comonDao.queryBySql(sql);
+        return commonDao.queryBySql(sql);
     }
 }

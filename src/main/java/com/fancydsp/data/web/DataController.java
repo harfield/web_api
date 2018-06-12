@@ -3,6 +3,8 @@ package com.fancydsp.data.web;
 
 import com.fancydsp.data.utils.MysqlBuilder;
 import com.fancydsp.data.service.DBService;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -21,7 +23,7 @@ public class DataController {
         return  dbService.loadMetaInfo("dowsing_data");
     }
 
-    @RequestMapping("/{name}")
+    @RequestMapping("/table/{name}")
     Object queryByTableName(@PathVariable String name
             ,@RequestParam(defaultValue = "1") int page
             ,@RequestParam(defaultValue = "10") int size
@@ -34,5 +36,7 @@ public class DataController {
         Object o = dbService.queryBySql(sql);
         return o;
     }
+
+
 
 }
