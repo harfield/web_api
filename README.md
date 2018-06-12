@@ -10,3 +10,9 @@
  
     {code:0,data:[{},{}]}
     {code:10,message:''}
+
+### 
+  + 异步任务
+  + druid 多数据源
+  + 发送邮件
+  + presto jdbc
