@@ -7,7 +7,7 @@
     <property name="info" value="info"/>
     <property name="warn" value="warn"/>
     <property name="error" value="error"/>
-    <property name="pname" value="dowsing"/>
+    <property name="pname" value="web_api_spring_boot"/>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -107,7 +107,7 @@
 
 
     <root level="INFO">
-        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="TRACE"/>
     </root>
 
 </configuration>

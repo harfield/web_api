@@ -52,7 +52,7 @@ public class JobController {
         }
         String subject = rows.get(0).get("name")+"_"+beginDate+"_"+endDate;
         try{
-            service.downloadDdyReport(script,email,subject.replace("-",""),tMap);
+            service.downloadDdyReport(script,email.trim(),subject.replace("-",""),tMap);
         }catch (Exception e){
             logger.error(e.getMessage(),e);
         }
