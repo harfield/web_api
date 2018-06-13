@@ -4,23 +4,27 @@ import com.fancydsp.data.dao.job.JobMapper;
 import com.fancydsp.data.domain.Pair;
 import com.fancydsp.data.service.DBService;
 import org.mybatis.spring.annotation.MapperScan;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.CRC32;
+import java.util.zip.CheckedOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @EnableAsync
 @Service("jobService")
 @MapperScan(value = "com.fancydsp.data.dao.job",sqlSessionFactoryRef = "jobSqlSessionFactory")
 public class JobService {
+    Logger logger = LoggerFactory.getLogger(getClass());
     @Resource
     JobMapper jobMapper;
 
@@ -35,38 +39,50 @@ public class JobService {
     public void downloadDdyReport(String sql,String emailAddr,String subject,Map<String,String> heads) throws IOException {
         long id = Thread.currentThread().getId();
         Object o = dbService.queryBySql(sql);
-        File tmpFile = File.createTempFile( subject+id,".csv");
-        BufferedWriter bfw = new BufferedWriter(new FileWriter(tmpFile));
+        StringBuilder builder = new StringBuilder();
+        String fileName = subject+id;
+        File tmpFile = File.createTempFile( subject+id,".csv.zip");
+        FileOutputStream fileOutputStream = new FileOutputStream(tmpFile);
+        CheckedOutputStream cos = new CheckedOutputStream(fileOutputStream, new CRC32());
+        ZipOutputStream out = new ZipOutputStream(cos);
+        out.putNextEntry(new ZipEntry(fileName + ".csv"));
         int size = heads.size();
         int i=0;
 
         for (String v : heads.values()){
-            bfw.append('"').append(v).append('"');
+            builder.append('"').append(v).append('"');
             i++;
             if(i==size){
-                bfw.append("\n");
+                builder.append("\n");
             }else {
-                bfw.append(",");
+                builder.append(",");
             }
         }
         for(Object line : (List) o){
             Map<String, Object> row = (Map<String, Object>) line;
             i=0;
             for (String key : heads.keySet()){
-                bfw.append('"').append(row.get(key)+"").append('"');
+                builder.append('"').append(row.get(key)+"").append('"');
                 i++;
                 if(i==size){
-                    bfw.append("\n");
+                    builder.append("\n");
                 }else {
-                    bfw.append(",");
+                    builder.append(",");
                 }
 
             }
+            if(builder.length() > 1024*1024){
+               out.write( builder.toString().getBytes("GBK"));
+               builder.setLength(0);
+            }
+
         }
-        bfw.close();
+        out.close();
+       // builder.close();
         List<Pair<String,File>> attachments = new ArrayList<Pair<String,File>>();
-        attachments.add(new Pair<String,File>(subject.substring(0,4)+".csv",tmpFile));
+        attachments.add(new Pair<String,File>(subject.substring(0,4)+".csv.zip",tmpFile));
         emailService.sendAttachmentsMail(emailAddr,subject,subject,attachments);
+        logger.info("file size : {}",tmpFile.length());
         tmpFile.delete();
 
     }
