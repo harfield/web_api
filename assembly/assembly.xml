@@ -6,37 +6,69 @@
         <format>zip</format>
     </formats>
     <!--<includeBaseDirectory>false</includeBaseDirectory>-->
-    <!--<dependencySets>
+    <dependencySets>
         <dependencySet>
-            <useProjectArtifact>true</useProjectArtifact>
+            <useProjectArtifact>false</useProjectArtifact>
             <outputDirectory>lib</outputDirectory>
             <unpack>false</unpack>
             <scope>runtime</scope>
         </dependencySet>
-    </dependencySets>-->
-
-    <files>
-        <file>
-            <source>target/${project.build.finalName}-jar-with-dependencies.jar</source>
-            <outputDirectory>lib</outputDirectory>
-        </file>
-    </files>
-
+    </dependencySets>
     <fileSets>
+        <fileSet>
+            <directory>${basedir}</directory>
+            <excludes>
+                <exclude>**/*</exclude>
+            </excludes>
+            <outputDirectory>bin</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${basedir}</directory>
+            <excludes>
+                <exclude>**/*</exclude>
+            </excludes>
+            <outputDirectory>lib</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${basedir}</directory>
+            <excludes>
+                <exclude>**/*</exclude>
+            </excludes>
+            <outputDirectory>jars</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${basedir}</directory>
+            <excludes>
+                <exclude>**/*</exclude>
+            </excludes>
+            <outputDirectory>etc</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${basedir}</directory>
+            <excludes>
+                <exclude>**/*</exclude>
+            </excludes>
+            <outputDirectory>logs</outputDirectory>
+        </fileSet>
         <fileSet>
             <directory>bin</directory>
             <outputDirectory>bin</outputDirectory>
+            <fileMode>755</fileMode>
         </fileSet>
         <fileSet>
             <directory>etc/${env}</directory>
             <outputDirectory>etc</outputDirectory>
         </fileSet>
-        <!--<fileSet>
-            <directory>bin</directory>
-            <excludes>
-                <exclude>*.*</exclude>
-            </excludes>
-            <outputDirectory>logs</outputDirectory>
-        </fileSet>-->
     </fileSets>
+
+    <files>
+        <file>
+            <source>target/${project.build.finalName}-jar-with-dependencies.jar</source>
+            <outputDirectory>jars</outputDirectory>
+        </file>
+        <file>
+            <source>target/${project.build.finalName}.jar</source>
+            <outputDirectory>lib</outputDirectory>
+        </file>
+    </files>
 </assembly>

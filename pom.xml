@@ -14,7 +14,7 @@
         <version>2.0.1.RELEASE</version>
     </parent>
     <build>
-        <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+        <!--<pluginManagement>&lt;!&ndash; lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) &ndash;&gt;-->
             <plugins>
                 <plugin>
                     <artifactId>maven-clean-plugin</artifactId>
@@ -28,18 +28,42 @@
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.7.0</version>
+                    <configuration>
+                        <source>1.7</source>
+                        <target>1.7</target>
+                        <encoding>UTF-8</encoding>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.20.1</version>
                 </plugin>
-                <!-- Package as an executable jar -->
                 <plugin>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>2.4</version>
+                    <configuration>
+                        <descriptors>
+                            <descriptor>assembly/jar-with-dependencies.xml</descriptor>
+                            <descriptor>assembly/assembly.xml</descriptor>
+                        </descriptors>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>make-assembly</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>single</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
+                <!-- Package as an executable jar -->
+                <!--<plugin>-->
+                    <!--<groupId>org.springframework.boot</groupId>-->
+                    <!--<artifactId>spring-boot-maven-plugin</artifactId>-->
+                <!--</plugin>-->
             </plugins>
-        </pluginManagement>
+        <!--</pluginManagement>-->
     </build>
     <dependencies>
         <dependency>
