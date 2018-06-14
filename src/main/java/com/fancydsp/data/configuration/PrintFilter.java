@@ -22,7 +22,7 @@ public class PrintFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         visitCount ++;
-        logger.info("from : {} ,request count : {}, source : {} " ,request.getRemoteUser(), visitCount,request.getRequestURI());
+        logger.info("from : {} ,request count : {}, source : {} " ,request.getRemoteHost(), visitCount,request.getRequestURI());
         filterChain.doFilter(request, response);
     }
 }

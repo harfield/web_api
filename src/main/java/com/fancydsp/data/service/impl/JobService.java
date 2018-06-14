@@ -37,11 +37,10 @@ public class JobService {
 
     @Async
     public void downloadDdyReport(String sql,String emailAddr,String subject,Map<String,String> heads) throws IOException {
-        long id = Thread.currentThread().getId();
         Object o = dbService.queryBySql(sql);
         StringBuilder builder = new StringBuilder();
-        String fileName = subject+id;
-        File tmpFile = File.createTempFile( subject+id,".csv.zip");
+        String fileName = subject;
+        File tmpFile = File.createTempFile( subject,".csv.zip");
         FileOutputStream fileOutputStream = new FileOutputStream(tmpFile);
         CheckedOutputStream cos = new CheckedOutputStream(fileOutputStream, new CRC32());
         ZipOutputStream out = new ZipOutputStream(cos);
@@ -62,7 +61,13 @@ public class JobService {
             Map<String, Object> row = (Map<String, Object>) line;
             i=0;
             for (String key : heads.keySet()){
-                builder.append('"').append(row.get(key)+"").append('"');
+                Object v = row.get(key);
+                if(v == null){
+                    v = "";
+                }else{
+                    v = v.toString().replace("\""," ");
+                }
+                builder.append('"').append(v).append('"');
                 i++;
                 if(i==size){
                     builder.append("\n");
@@ -76,6 +81,10 @@ public class JobService {
                builder.setLength(0);
             }
 
+        }
+        if(builder.length() > 0){
+            out.write( builder.toString().getBytes("GBK"));
+            builder.setLength(0);
         }
         out.close();
        // builder.close();

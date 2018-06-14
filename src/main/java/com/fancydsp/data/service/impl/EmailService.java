@@ -41,7 +41,7 @@ public class EmailService {
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
             helper.setFrom(emailConfig.getEmailFrom());
             helper.setTo(sendTo);
-            helper.setSubject(title);
+            helper.setSubject(emailConfig.getSubjectPrefix() + title);
             helper.setText(content);
 
             for (Pair<String, File> pair : attachments) {

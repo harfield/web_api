@@ -57,9 +57,10 @@ spring:
     add-mappings : false
 
   mail :
-    host : smtp.qq.com
-    username : huangrh@fancydsp.com
-    password : ruihua@123
+    host : smtp.exmail.qq.com
+    password : Fancy2018!@#
+    username : alarm@fancydigital.com.cn
+    subject-prefix : 【数据离线下载】
     properties :
       mail :
         smtp :
