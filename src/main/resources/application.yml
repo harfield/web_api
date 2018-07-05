@@ -9,7 +9,7 @@ spring:
         type : com.alibaba.druid.pool.DruidDataSource
         url : jdbc:mysql://10.215.28.5:3306/ad_report?useUnicode=true&characterEncoding=UTF-8
         username : report
-        password : 69PkFs7ty
+        password : 
         driver-class-name : com.mysql.jdbc.Driver
         filters : stat
         maxActive : 60
@@ -29,7 +29,7 @@ spring:
         type : com.alibaba.druid.pool.DruidDataSource
         url : jdbc:mysql://10.215.28.170:3306/fancy_report_task?useUnicode=true&characterEncoding=UTF-8
         username : report
-        password : 69PkFs7ty
+        password : 
         driver-class-name : com.mysql.jdbc.Driver
         filters : stat
         maxActive : 60
@@ -58,8 +58,8 @@ spring:
 
   mail :
     host : smtp.exmail.qq.com
-    password : Fancy2018!@#
-    username : alarm@fancydigital.com.cn
+    password :
+    username : alarm@fancydigital
     subject-prefix : 【数据离线下载】
     properties :
       mail :
