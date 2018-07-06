@@ -3,6 +3,8 @@ package com.fancydsp.data.service.impl;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PreDestroy;
@@ -31,7 +33,8 @@ public class PrestoService {
         psConn.close();
     }
 
-    public List<Map<String,Object>> query(String sql) throws SQLException {
+    @Async
+    public AsyncResult<List<Map<String,Object>>> query(String sql) throws SQLException {
         Statement statement = psConn.createStatement();
         ResultSet resultSet = statement.executeQuery(sql);
         ResultSetMetaData metaData = resultSet.getMetaData();
@@ -46,9 +49,9 @@ public class PrestoService {
         }
         resultSet.close();
         statement.close();
-        return  res;
+        return  new AsyncResult<List<Map<String,Object>>>(res);
     }
-
+    @Async
     public boolean execute(String sql){
         return true;
     }

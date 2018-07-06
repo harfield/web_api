@@ -16,7 +16,6 @@ public class PrestoController {
     @Resource
     private PrestoService service;
 
-    @Async
     @GetMapping("/job/{id}")
     Object asyncJob(@PathVariable int id){
         Object res  = null;
