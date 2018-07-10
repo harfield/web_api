@@ -39,6 +39,7 @@ public class BoolEvaluator  extends Evaluator<Boolean>{
         System.out.println(boolEvaluator.cal("true and false or true "));
         System.out.println(boolEvaluator.cal("true and (false or true) and (true or false) "));
         System.out.println(boolEvaluator.cal("(true and (false or true)) and (true or false) "));
+        System.out.println(boolEvaluator.cal("(true and (false or true)) and (true or false)  "));
 
     }
 

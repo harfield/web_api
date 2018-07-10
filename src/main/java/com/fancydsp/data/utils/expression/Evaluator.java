@@ -64,11 +64,11 @@ public abstract class Evaluator <T>{
                     token = "";
                 }
                 if(c == '('){
-                    tokens.add(new Node("" + brace  ,2));
+                    tokens.add(new Node("brace:" + brace  ,2));
                     braceStack.push(brace++);
 
                 }else{
-                    tokens.add(new Node(braceStack.pop() + "" ,3));
+                    tokens.add(new Node("brace:" + braceStack.pop()  ,3));
 
                 }
             }else{
@@ -78,6 +78,9 @@ public abstract class Evaluator <T>{
 
         if(!token.isEmpty()){
             tokens.add(new Node(token,0));
+        }
+        if(!braceStack.empty()){
+             throw new RuntimeException("expression is not valid braces not in pair ");
         }
 
         return  tokens;
@@ -91,7 +94,7 @@ public abstract class Evaluator <T>{
 
     static class Node{
         String v;
-        int type = 0; // a and ( )
+        int type = 0; // 0 opland, 1 op ,2 ( ,3 )
         Node left;
         Node right;
 
