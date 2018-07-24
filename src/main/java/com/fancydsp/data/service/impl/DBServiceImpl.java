@@ -75,4 +75,9 @@ public class DBServiceImpl implements DBService{
     public Object queryBySql(String sql) {
         return commonDao.queryBySql(sql);
     }
+
+    @Override
+    public Object queryBySql(String sql, Map<String, Object> params) {
+        return commonDao.queryBySqlWithParams(sql,params);
+    }
 }

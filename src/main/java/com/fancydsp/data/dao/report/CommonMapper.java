@@ -10,4 +10,7 @@ public interface CommonMapper {
 
     @Select("${sql}")
     List<Map<String,Object>> queryBySql(@Param("sql") String sql);
+
+    @Select({"${sql}"})
+    List<Map<String,Object>> queryBySqlWithParams(@Param("sql") String sql, @Param("param") Map<String, Object> params);
 }

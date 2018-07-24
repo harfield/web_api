@@ -1,14 +1,14 @@
 package com.fancydsp.data.web;
 
+import com.fancydsp.data.domain.Job.OfflineSqlTask;
 import com.fancydsp.data.domain.ResponseMessage;
 import com.fancydsp.data.service.impl.JobService;
-import com.fancydsp.data.utils.MysqlBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,50 +26,80 @@ public class JobController {
 
     @RequestMapping("/{id}")
     Object asyncJob(@PathVariable int id
-                    ,@RequestParam("begin_date") String beginDate
-                    ,@RequestParam("end_date") String endDate
                     ,@RequestParam("email") String email
                     ,@RequestParam("username") String username
-                    ,@RequestParam(value = "adx",defaultValue = "") String adx
-                    ,@RequestParam(value = "advertiser",defaultValue = "") String advertiser
+                    ,@RequestParam Map<String,String> params
     ){
-        logger.info("request params are : reportId {},beginDate {},endDate {}, email {}, username {},adx {} , advertiser {} "
-                ,id,beginDate,endDate,email,username,adx,advertiser
+        logger.info("request params are : reportId {}, email {}, username {}, params {}  "
+                ,id,email,username,params.toString()
         );
 
-        String sql = MysqlBuilder.build()
-                .SELECT("script,name,fields")
-                .FROM("fancy_report_task.report_sql")
-                .WHERE("id="+id).toString();
-        List<Map<String, Object>> rows = service.queryBySql(sql);
-        if(rows.size()==0){
-            throw new RuntimeException("no sql found ");
-        }else if(rows.size() > 1){
-            throw new RuntimeException( rows.size() + "  scripts found,this should not happen ");
+        OfflineSqlTask taskInfo = service.fetchJobInfo(id);
+        if(null == taskInfo) {
+            throw new RuntimeException(" no job info found :  "  + id);
         }
 
-        String script = rows.get(0).get("script").toString().replaceAll("\\$\\{begin_date}",beginDate).replaceAll("\\$\\{end_date}",endDate);
-        String where = "";
-        if(!adx.isEmpty()){
-            where += " AND a_vendor.id in ( " + adx + ") ";
+        List<OfflineSqlTask.Rule> rules = taskInfo.getRules();
+        Map<String,OfflineSqlTask.Rule> ruleName = new HashMap<String,OfflineSqlTask.Rule>();
+        Map<String,Object> sqlParams = new HashMap<String,Object>();
+        for(OfflineSqlTask.Rule rule : rules){
+            ruleName.put(rule.getSqlPlaceholder(),rule);
+            setParamWithType(sqlParams,params,rule);
         }
-        if(!advertiser.isEmpty()){
-            where += " AND a_advertiser.id in ( " + advertiser + ") ";
+
+        String rawSql = taskInfo.getScript();
+        for(String key : sqlParams.keySet()){
+            rawSql = rawSql.replaceAll("\\$\\{"+key+"}",ruleName.get(key).getReplaceValue());
         }
-        script = script.replaceAll("\\$\\{placeholder}",where);
-        String[] fields = rows.get(0).get("fields").toString().split("\\n");
-        Map<String,String> tMap=new LinkedHashMap<String,String>();
-        for(String w :fields){
-            String[] split = w.split("=");
-            tMap.put(split[0],split[1]);
+
+        rawSql = rawSql.replaceAll("\\$\\{.*?}","");
+        String fields = taskInfo.getFields();
+        Map<String,String> fieldMap = new HashMap<String,String>();
+        for(String kf : fields.split("\n",-1)){
+            String[] split = kf.split("=", -1);
+            fieldMap.put(split[0],split[1]);
         }
-        String subject = rows.get(0).get("name")+"_"+beginDate+"_"+endDate;
-        try{
-            service.downloadDdyReport(script,email.trim(),subject.replace("-",""),tMap);
+        try {
+             service.downloadDdyReport(rawSql, email, taskInfo.getName(), fieldMap, sqlParams);
         }catch (Exception e){
-            logger.error(e.getMessage(),e);
+             //no use
         }
 
         return new ResponseMessage("submit");
     }
+
+    private void setParamWithType(Map<String, Object> sqlParams, Map<String, String> inputParams, OfflineSqlTask.Rule rule) {
+        String rawParamValue = inputParams.get(rule.getSqlPlaceholder());
+        Object paramValue = null;
+
+        if(null != rawParamValue) {
+            switch (rule.getParamType()) {
+                case 1: //string
+                    paramValue = rawParamValue;
+                    break;
+                case 2: //int
+                    paramValue = Integer.parseInt(rawParamValue);
+                    break;
+                case 3: //bool
+                    paramValue = rule.getReplaceValue();
+                    break;
+                default:
+                    throw new RuntimeException(" param type " + rule.getParamType() + "not support yet" );
+
+            }
+        }
+
+        if(rule.getIsOptional() ){
+            if(paramValue != null){
+                sqlParams.put(rule.getSqlPlaceholder(),paramValue);
+            }
+        }else{
+            if(paramValue == null){
+                throw new RuntimeException(" param " + rule.getSqlPlaceholder() + " not found which is needed ");
+            }
+            sqlParams.put(rule.getSqlPlaceholder(),paramValue);
+        }
+
+    }
 }
+

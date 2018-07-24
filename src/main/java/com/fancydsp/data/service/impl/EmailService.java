@@ -54,7 +54,7 @@ public class EmailService {
         mailSender.send(mimeMessage);
     }
 
-
+//    todo 使用模板发送邮件
 //    public void sendTemplateMail(String sendTo, String titel, Map<String, Object> content, List<Pair<String, File>> attachments) {
 //
 //        MimeMessage mimeMessage = mailSender.createMimeMessage();

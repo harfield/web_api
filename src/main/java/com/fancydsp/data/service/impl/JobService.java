@@ -1,6 +1,7 @@
 package com.fancydsp.data.service.impl;
 
 import com.fancydsp.data.dao.job.JobMapper;
+import com.fancydsp.data.domain.Job.OfflineSqlTask;
 import com.fancydsp.data.domain.Pair;
 import com.fancydsp.data.service.DBService;
 import org.mybatis.spring.annotation.MapperScan;
@@ -34,10 +35,28 @@ public class JobService {
     @Resource
     EmailService emailService;
 
+    public OfflineSqlTask fetchJobInfo (long id){
+        return jobMapper.fetchSqlJobTask(id);
+    }
+
 
     @Async
     public void downloadDdyReport(String sql,String emailAddr,String subject,Map<String,String> heads) throws IOException {
         Object o = dbService.queryBySql(sql);
+        sendMail(emailAddr, subject, heads, (List) o);
+
+    }
+
+
+    @Async
+    public void downloadDdyReport(String sql,String emailAddr,String subject,Map<String,String> heads,Map<String,Object> sqlParams) throws IOException {
+        Object o = dbService.queryBySql(sql,sqlParams);
+        sendMail(emailAddr, subject, heads, (List) o);
+
+    }
+
+    @Async
+    public void sendMail(String emailAddr, String subject, Map<String, String> heads, List o) throws IOException {
         StringBuilder builder = new StringBuilder();
         String fileName = subject;
         File tmpFile = File.createTempFile( subject,".csv.zip");
@@ -57,7 +76,7 @@ public class JobService {
                 builder.append(",");
             }
         }
-        for(Object line : (List) o){
+        for(Object line : o){
             Map<String, Object> row = (Map<String, Object>) line;
             i=0;
             for (String key : heads.keySet()){
@@ -87,17 +106,13 @@ public class JobService {
             builder.setLength(0);
         }
         out.close();
-       // builder.close();
+        // builder.close();
         List<Pair<String,File>> attachments = new ArrayList<Pair<String,File>>();
         attachments.add(new Pair<String,File>(subject.substring(0,4)+".csv.zip",tmpFile));
         emailService.sendAttachmentsMail(emailAddr,subject,subject,attachments);
         logger.info("file size : {}",tmpFile.length());
         tmpFile.delete();
-
     }
 
-    public List<Map<String,Object>> queryBySql(String sql){
-        return jobMapper.queryBySql(sql);
 
-    }
 }

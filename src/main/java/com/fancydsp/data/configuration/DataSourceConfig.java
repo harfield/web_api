@@ -1,5 +1,6 @@
 package com.fancydsp.data.configuration;
 
+
 import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceBuilder;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
@@ -13,6 +14,12 @@ import javax.sql.DataSource;
 
 @Configuration
 public class DataSourceConfig {
+    //mybatis 在多数据源下配置失效
+    @Bean
+    @ConfigurationProperties(prefix = "mybatis.configuration")
+    public org.apache.ibatis.session.Configuration globalSessionConfiguration(){
+        return new org.apache.ibatis.session.Configuration();
+    }
 
     @Bean(name = "primaryDataSource")
     @Primary
@@ -23,9 +30,10 @@ public class DataSourceConfig {
 
     @Bean(name = "dbSqlSessionFactory")
     @Primary
-    public SqlSessionFactory dbSqlSessionFactory(@Qualifier("primaryDataSource") DataSource dataSource) throws Exception {
+    public SqlSessionFactory dbSqlSessionFactory(@Qualifier("primaryDataSource") DataSource dataSource,org.apache.ibatis.session.Configuration configuration) throws Exception {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(dataSource);
+        bean.setConfiguration(configuration);
         return bean.getObject();
     }
 
@@ -39,9 +47,10 @@ public class DataSourceConfig {
 
 
     @Bean(name = "jobSqlSessionFactory")
-    public SqlSessionFactory jobSqlSessionFactory(@Qualifier("secondaryDataSource") DataSource dataSource) throws Exception {
+    public SqlSessionFactory jobSqlSessionFactory(@Qualifier("secondaryDataSource") DataSource dataSource,org.apache.ibatis.session.Configuration configuration) throws Exception {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(dataSource);
+        bean.setConfiguration(configuration);
         return bean.getObject();
     }
 
