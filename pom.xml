@@ -34,30 +34,30 @@
                     <version>2.20.1</version>
                 </plugin>
                 <!--Package as an executable jar-->
-                <!--<plugin>-->
-                    <!--<groupId>org.springframework.boot</groupId>-->
-                    <!--<artifactId>spring-boot-maven-plugin</artifactId>-->
-                <!--</plugin>-->
-                <!--Package as assembly-->
                 <plugin>
-                    <artifactId>maven-assembly-plugin</artifactId>
-                    <version>2.4</version>
-                    <configuration>
-                        <descriptors>
-                            <descriptor>assembly/jar-with-dependencies.xml</descriptor>
-                            <descriptor>assembly/assembly.xml</descriptor>
-                        </descriptors>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>make-assembly</id>
-                            <phase>package</phase>
-                            <goals>
-                                <goal>single</goal>
-                            </goals>
-                        </execution>
-                    </executions>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
                 </plugin>
+                <!--Package as assembly-->
+                <!--<plugin>-->
+                <!--<artifactId>maven-assembly-plugin</artifactId>-->
+                <!--<version>2.4</version>-->
+                <!--<configuration>-->
+                <!--<descriptors>-->
+                <!--<descriptor>assembly/jar-with-dependencies.xml</descriptor>-->
+                <!--<descriptor>assembly/assembly.xml</descriptor>-->
+                <!--</descriptors>-->
+                <!--</configuration>-->
+                <!--<executions>-->
+                <!--<execution>-->
+                <!--<id>make-assembly</id>-->
+                <!--<phase>package</phase>-->
+                <!--<goals>-->
+                <!--<goal>single</goal>-->
+                <!--</goals>-->
+                <!--</execution>-->
+                <!--</executions>-->
+                <!--</plugin>-->
 
             </plugins>
         <!--</pluginManagement>-->

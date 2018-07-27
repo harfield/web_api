@@ -1,16 +1,21 @@
 package com.fancydsp.data.web;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fancydsp.data.domain.Job.OfflineSqlTask;
 import com.fancydsp.data.domain.ResponseMessage;
 import com.fancydsp.data.service.impl.JobService;
+import com.fancydsp.data.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 
 @RestController
@@ -19,16 +24,74 @@ import java.util.Map;
 public class JobController {
     Logger logger = LoggerFactory.getLogger(getClass());
 
+
     @Resource
     private JobService service;
 
 
+    @PostMapping("/ddy")
+    Object sendOfflineMail(@RequestParam("sql") String sql
+            , @RequestParam("dsn") String dsn
+            , @RequestParam("receiver") String receiver
+            , @RequestParam("subject") String subject
+            , @RequestParam Map<String, String> params
+    ) {
+        logger.info("sql : {} ", sql);
+        logger.info("request params are : subject {}, email {} ,user {}"
+                , subject, receiver, params.get("user_info")
+        );
+        JSONObject dbInfo = JSONObject.parseObject(dsn);
+        service.sendDdyReportByMail(sql, dbInfo.getString("dsn"), receiver, subject);
+        return new ResponseMessage("submit");
+    }
 
-    @RequestMapping("/{id}")
-    Object asyncJob(@PathVariable int id
-                    ,@RequestParam("email") String email
-                    ,@RequestParam("username") String username
-                    ,@RequestParam Map<String,String> params
+    @RequestMapping("/script/{id}")
+    Object startScript(@PathVariable("id") int id
+            , @RequestParam Map<String, String> params
+    ) throws ExecutionException, InterruptedException {
+        logger.info("script {} ,params :{}", id, params.toString());
+        OfflineSqlTask offlineSqlTask = service.fetchJobInfo(id);
+
+        String identifier = Utils.MD5(offlineSqlTask.getScript());
+        Map<String, Object> jobData = (Map<String, Object>) service.getJobData(identifier);
+
+        if (jobData == null) {
+            startJob(params, offlineSqlTask, identifier);
+            return new ResponseMessage("submit");
+        } else {
+            Future future = (Future) jobData.get("future");
+            if (future.isDone()) {
+                jobData.put("last_status", future.get());
+                if (System.currentTimeMillis() - (long) jobData.get("start") > 15 * 60 * 1000L) {
+                    startJob(params, offlineSqlTask, identifier);
+                    return new ResponseMessage("submit");
+                } else {
+                    return new ResponseMessage("请稍后重试,上一次执行时间 ：" + new Date((long) jobData.get("start")));
+                }
+            } else {
+                jobData.put("msg", "running");
+            }
+            return jobData;
+        }
+
+
+    }
+
+    private void startJob(Map<String, String> params, OfflineSqlTask offlineSqlTask, String identifier) {
+        Map<String, Object> jobData;
+        jobData = new HashMap<String, Object>();
+        Future<String> future = service.runScript(offlineSqlTask.getScript(), params);
+        jobData.put("start", System.currentTimeMillis());
+        jobData.put("future", future);
+        service.setJobData(identifier, jobData);
+    }
+
+
+    @RequestMapping("/sql/{id}")
+    Object sendMailBySql(@PathVariable int id
+            , @RequestParam("email") String email
+            , @RequestParam("username") String username
+            , @RequestParam Map<String, String> params
     ){
         logger.info("request params are : reportId {}, email {}, username {}, params {}  "
                 ,id,email,username,params.toString()
@@ -60,14 +123,13 @@ public class JobController {
             fieldMap.put(split[0],split[1]);
         }
         try {
-             service.downloadDdyReport(rawSql, email, taskInfo.getName(), fieldMap, sqlParams);
+            service.downloadDdyReport(rawSql, email, taskInfo.getName(), fieldMap, sqlParams);
         }catch (Exception e){
-             //no use
+            //no use
         }
 
         return new ResponseMessage("submit");
     }
-
     private void setParamWithType(Map<String, Object> sqlParams, Map<String, String> inputParams, OfflineSqlTask.Rule rule) {
         String rawParamValue = inputParams.get(rule.getSqlPlaceholder());
         Object paramValue = null;
@@ -101,5 +163,7 @@ public class JobController {
         }
 
     }
+
+
 }
 

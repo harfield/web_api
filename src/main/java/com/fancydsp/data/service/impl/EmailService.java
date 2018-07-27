@@ -24,9 +24,12 @@ public class EmailService {
 //    private VelocityEngine velocityEngine;
 
     public void sendSimpleMail(String sendTo, String title, String content) {
+        if (sendTo == null) {
+            sendTo = emailConfig.getErrorTo();
+        }
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(emailConfig.getEmailFrom());
-        message.setTo(sendTo);
+        message.setTo(sendTo.split(";"));
         message.setSubject(title);
         message.setText(content);
         mailSender.send(message);

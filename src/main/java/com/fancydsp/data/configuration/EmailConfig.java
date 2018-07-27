@@ -10,6 +10,8 @@ public class EmailConfig {
     private String emailFrom;
     @Value("${spring.mail.subject-prefix}")
     private String subjectPrefix;
+    @Value("${spring.mail.error.to}")
+    private String errorTo;
 
     public String getEmailFrom() {
         return emailFrom;
@@ -25,5 +27,13 @@ public class EmailConfig {
 
     public void setSubjectPrefix(String subjectPrefix) {
         this.subjectPrefix = subjectPrefix;
+    }
+
+    public String getErrorTo() {
+        return errorTo;
+    }
+
+    public void setErrorTo(String errorTo) {
+        this.errorTo = errorTo;
     }
 }

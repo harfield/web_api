@@ -5,7 +5,7 @@ spring:
   datasource:
     type : com.alibaba.druid.pool.DruidDataSource
     primary :
-        name : dowsing
+        name : report
         type : com.alibaba.druid.pool.DruidDataSource
         url : jdbc:mysql://10.215.28.5:3306/ad_report?useUnicode=true&characterEncoding=UTF-8
         username : report
@@ -58,9 +58,11 @@ spring:
 
   mail :
     host : smtp.exmail.qq.com
-    password :
-    username : alarm@fancydigital
+    password : Fancy2018!@#
+    username : alarm@fancydigital.com.cn
     subject-prefix : 【数据离线下载】
+    error :
+      to : huangrh@fancydigital.com.cn
     properties :
       mail :
         smtp :
