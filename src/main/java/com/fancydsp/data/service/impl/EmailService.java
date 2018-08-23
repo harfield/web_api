@@ -43,7 +43,7 @@ public class EmailService {
 
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
             helper.setFrom(emailConfig.getEmailFrom());
-            helper.setTo(sendTo);
+            helper.setTo(sendTo.split(";"));
             helper.setSubject(emailConfig.getSubjectPrefix() + title);
             helper.setText(content);
 
