@@ -44,7 +44,9 @@ spring:
         testOnReturn : false
         poolPreparedStatements : false
         maxOpenPreparedStatements : 20
-
+  http :
+    multipart :
+        location : /tmp/web_api/
   security :
     user :
       name : dw
