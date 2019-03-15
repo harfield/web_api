@@ -1,6 +1,7 @@
 package com.fancydsp.data;
 
 import com.alibaba.druid.support.json.JSONUtils;
+import com.fancydsp.data.domain.ResponseMessage;
 import com.fancydsp.data.web.InnerErrorController;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,7 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
@@ -136,30 +136,17 @@ public class ApplicationServer
 
                 if(object instanceof InnerErrorController.ErrorResponse){
                     super.writeInternal(object, type, outputMessage);
-                }else{
-                    if(outputMessage instanceof ServletServerHttpResponse){
-                        ServletServerHttpResponse resp = (ServletServerHttpResponse) outputMessage;
-                        if(resp.getServletResponse().getStatus() != 200){
-                             Map<String,Object> map = new HashMap<String,Object>();
-                             if(object instanceof Map){
-                                  map.putAll((Map)object);
-                             }else{
-                                 map.put("message",object);
-                             }
-                             map.put("code",resp.getServletResponse().getStatus());
-                             super.writeInternal(map, type, outputMessage);
-                        }else{
-                            Map<String,Object> map = new HashMap<String,Object>();
-                            map.put("data",object);
-                            map.put("code",0);
-                            super.writeInternal(map, type, outputMessage);
-                        }
-                    }else{
-                        Map<String,Object> map = new HashMap<String,Object>();
-                        map.put("data",object);
-                        map.put("code",0);
+                }else if(outputMessage instanceof Map){
                         super.writeInternal(object, type, outputMessage);
-                    }
+                }else {
+                        int code = 0;
+                        if (object instanceof ResponseMessage) {
+                            code = ((ResponseMessage) object).getCode();
+                        }
+                        Map<String, Object> map = new HashMap<String, Object>();
+                        map.put("data", object);
+                        map.put("code", code);
+                        super.writeInternal(object, type, outputMessage);
 
                 }
 

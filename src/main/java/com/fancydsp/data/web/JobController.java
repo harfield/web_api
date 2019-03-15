@@ -52,7 +52,7 @@ public class JobController {
         logger.info("script {} ,params :{}", id, params.toString());
         OfflineSqlTask offlineSqlTask = service.fetchJobInfo(id);
 
-        String identifier = Utils.MD5(offlineSqlTask.getScript());
+        String identifier = Utils.MD5(offlineSqlTask.getScript() + JSONObject.toJSONString(params));
         Map<String, Object> jobData = (Map<String, Object>) service.getJobData(identifier);
 
         if (jobData == null) {
@@ -66,10 +66,16 @@ public class JobController {
                     startJob(params, offlineSqlTask, identifier);
                     return new ResponseMessage("submit");
                 } else {
-                    return new ResponseMessage("请稍后重试,上一次执行时间 ：" + new Date((long) jobData.get("start")));
+                    return new ResponseMessage(
+                            String.format("请稍后重试,上一次执行时间 ： %s , status :%s"
+                                    , new Date((long) jobData.get("start"))
+                                    ,jobData.get("last_status").toString())
+                            , 100
+                    );
                 }
             } else {
                 jobData.put("msg", "running");
+                jobData.put("code",110);
             }
             return jobData;
         }
